@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Will You Be My Valentine?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Include confetti library from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Include Animate.css for additional animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <!-- Link to external CSS file -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background music (hidden until triggered) -->
+  <audio id="bgMusic" loop>
+    <!-- Replace the src below with your own licensed version of Careless Whisper or a similar track -->
+    <source src="https://ia803100.us.archive.org/13/items/carelesswhisper_201911/Careless%20Whisper.ogg" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- Floating hearts in the background -->
+  <div id="hearts-container">
+    <span class="heart" style="left: 10%; animation-duration: 10s; font-size: 25px;">&#10084;</span>
+    <span class="heart" style="left: 25%; animation-duration: 12s; font-size: 20px;">&#10084;</span>
+    <span class="heart" style="left: 40%; animation-duration: 8s; font-size: 30px;">&#10084;</span>
+    <span class="heart" style="left: 55%; animation-duration: 11s; font-size: 22px;">&#10084;</span>
+    <span class="heart" style="left: 70%; animation-duration: 9s; font-size: 28px;">&#10084;</span>
+    <span class="heart" style="left: 85%; animation-duration: 10s; font-size: 24px;">&#10084;</span>
+    <!-- Extra hearts for more sparkle -->
+    <span class="heart" style="left: 15%; animation-duration: 9s; font-size: 26px;">&#10084;</span>
+    <span class="heart" style="left: 65%; animation-duration: 12s; font-size: 23px;">&#10084;</span>
+  </div>
+
+  <!-- Falling petals animation -->
+  <div id="petals-container">
+    <span class="petal" style="left: 20%;">&#10047;</span>
+    <span class="petal" style="left: 40%; animation-delay: 2s;">&#10047;</span>
+    <span class="petal" style="left: 60%; animation-delay: 4s;">&#10047;</span>
+    <span class="petal" style="left: 80%; animation-delay: 1s;">&#10047;</span>
+    <span class="petal" style="left: 30%; animation-delay: 3s;">&#10047;</span>
+    <span class="petal" style="left: 50%; animation-delay: 5s;">&#10047;</span>
+    <span class="petal" style="left: 70%; animation-delay: 6s;">&#10047;</span>
+  </div>
+
+  <!-- Main interactive content -->
+  <div id="initial" class="container">
+    <h1 class="animate__animated animate__bounceInDown">Will you be my Valentine?</h1>
+    <button id="yesBtn" class="animate__animated animate__pulse">Yes</button>
+    <button id="noBtn" class="animate__animated animate__shakeX">No</button>
+  </div>
+
+  <!-- Hidden Valentine message with typewriter effect -->
+  <div id="valentine-message" class="container">
+    <h1 class="animate__animated animate__zoomIn">Happy Valentine's Day!</h1>
+    <div id="typewriter"></div>
+    <div id="big-heart" style="font-size: 4em; color: #ff69b4;" class="animate__animated animate__heartBeat">&#10084;</div>
+  </div>
+
+  <!-- Hidden Easter Egg Heart -->
+  <div id="easter-egg" title="Click me for a surprise!">&#10084;</div>
+
+  <script>
+    // --- Background Music & Sound Effects ---
+    const bgMusic = document.getElementById('bgMusic');
+    // Preload a click sound effect for buttons (you can change the source URL)
+    const clickSound = new Audio('https://www.myinstants.com/media/sounds/button-16.mp3');
+
+    // --- Interactive Button Logic ---
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const initialContainer = document.getElementById('initial');
+    const valentineMessage = document.getElementById('valentine-message');
+
+    // Move the "No" button away on mouseover
+    function moveButton() {
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+      const maxX = window.innerWidth - btnWidth;
+      const maxY = window.innerHeight - btnHeight;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      noBtn.style.position = 'absolute';
+      noBtn.style.left = randomX + 'px';
+      noBtn.style.top = randomY + 'px';
+    }
+    noBtn.addEventListener('mouseover', moveButton);
+
+    // --- Typewriter Effect Setup ---
+    const typewriterElement = document.getElementById('typewriter');
+    // List of love quotes/messages
+    const messages = [
+      "Every moment with you is a treasure.",
+      "Your smile lights up my world.",
+      "I cherish every heartbeat we share.",
+      "You make life beautiful, one day at a time."
+    ];
+    let messageIndex = 0;
+    let charIndex = 0;
+    function typeMessage() {
+      if (messageIndex >= messages.length) {
+        messageIndex = 0; // loop back if needed
+      }
+      const currentMessage = messages[messageIndex];
+      if (charIndex < currentMessage.length) {
+        typewriterElement.textContent += currentMessage.charAt(charIndex);
+        charIndex++;
+        setTimeout(typeMessage, 80);
+      } else {
+        // Pause before showing the next message
+        setTimeout(() => {
+          typewriterElement.textContent = "";
+          charIndex = 0;
+          messageIndex++;
+          typeMessage();
+        }, 2000);
+      }
+    }
+
+    // --- Yes Button Click Handler ---
+    yesBtn.addEventListener('click', function() {
+      clickSound.play();
+      initialContainer.style.display = 'none';
+      valentineMessage.style.display = 'block';
+      
+      // Start the background music (if not already playing)
+      bgMusic.play().catch(err => {
+        console.log("Music play prevented:", err);
+      });
+      
+      // Fire enhanced confetti effect
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+      
+      // Start the typewriter effect after a short delay
+      setTimeout(typeMessage, 500);
+    });
+
+    // --- Floating Hearts Interaction ---
+    document.querySelectorAll('.heart').forEach(heart => {
+      heart.addEventListener('click', () => {
+        clickSound.play();
+        alert("You're as lovely as these hearts!");
+      });
+    });
+
+    // --- Easter Egg Logic ---
+    const easterEgg = document.getElementById('easter-egg');
+    easterEgg.addEventListener('click', () => {
+      clickSound.play();
+      alert("Surprise! You found a secret message: Love is all around!");
+    });
+  </script>
+</body>
+</html>
